@@ -42,5 +42,6 @@ with DeviceManager(verbose=False) as device_manager:
     #Loop until session terminates
         #Pull each Channels peak to peak values and save to an excel doc
         #Pull adeverage Vout and save to excel doc
+            #ACQ:MOD AVR
 
         #format of CSV: Per Channel {<TIME STAMP>, <VOUT AVG>, <PEAK MIN>, <PEAK MAX>}
