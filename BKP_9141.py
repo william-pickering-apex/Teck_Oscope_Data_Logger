@@ -58,6 +58,29 @@ def ave_pull_current(my_instrument_in, duration, time_step_in=0.1):
         max_sample=max(max_sample,current_sample)
     return [ave_sample/(pulls+1), min_sample, max_sample]
 
+def ave_pull_multi(my_instrument_in, duration, time_step_in=0.1,ch_count=3):
+    pulls = int(duration/(0.1+time_step_in))-1
+    if pulls <=0:
+        pulls=0
+        print("Only pulling an average of 1")
+    return_values=list()
+    for i in range(ch_count):
+        my_instrument_in.query('INST {}'.format(i))
+        ave_sample=pull_current(my_instrument_in)
+        min_sample=ave_sample
+        max_sample=ave_sample
+        for i in range(pulls):
+            time.sleep(time_step_in)
+            current_sample=pull_current(my_instrument_in)
+            ave_sample+=current_sample
+            min_sample=min(min_sample,current_sample)
+            max_sample=max(max_sample,current_sample)
+        return_values.append(pull_voltage(my_instrument_in))
+        return_values.append(ave_sample/(pulls+1))
+        return_values.append(min_sample)
+        return_values.append(max_sample)
+    return return_values
+
 def battery_triangle_wave(my_instrument_in, csv_file_name,min_voltage=20,max_voltage=34):
     voltage_step=4
     time_at_voltage=20
@@ -65,6 +88,7 @@ def battery_triangle_wave(my_instrument_in, csv_file_name,min_voltage=20,max_vol
     #TIME, V, I_AVG, I_MIN, I_MAX
     try:
         with open(csv_file_name, mode='a') as file:
+            file.write('PSU Output (V),PSU Output Avg (A),PSU Output Min (A),PSU Output Max (A)')
             #Step through the voltage range
             for i in range(5):
                 #set the PSU output Voltage
@@ -84,6 +108,32 @@ def battery_triangle_wave(my_instrument_in, csv_file_name,min_voltage=20,max_vol
     except Exception as error:
         file.close()
         raise
+
+def steady_state(my_instrument_in, csv_file_name,ch_count=3):
+    voltage_step=4
+    time_at_voltage=20
+    #CSV Format:
+    #TIME, V, I_AVG, I_MIN, I_MAX
+    #try:
+    with open(csv_file_name, mode='a') as file:
+        for j in range(time_at_voltage):
+            #Timestamp entry
+            local_time = time.localtime()
+            file.write("{}:{}:{},".format(local_time.tm_hour, local_time.tm_min, local_time.tm_sec))
+
+            #pull data
+            for i in range(ch_count):
+                my_instrument_in.query('INST {}'.format(ch_count))
+                sampled_current=ave_pull_multi(my_instrument_in, 1,0.1,2)
+
+            #print data
+            output_string = ','.join([str(i) for i in sampled_current])
+            file.write(output_string+'\n')
+            print(output_string)
+
+   # except Exception as error:
+   #     file.close()
+   #     raise
 
 def set_local_time(my_instrument_in):
     local_time = time.localtime()

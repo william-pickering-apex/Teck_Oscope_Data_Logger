@@ -13,7 +13,8 @@ my_instrument.query('OUTP:PAIR PARA3')
 my_instrument.query('OUTP 0')
 
 file_base_name = "../Logs/"+input("Enter Test Name: ")+".csv"
-
+with open(file_base_name, mode='a') as file:
+    file.write('CH1 PSU Output (V),CH1 PSU Output Avg (A),CH1 PSU Output Min (A),CH1 PSU Output Max (A)\n')
 #set the time
 BKP_9141.set_local_time(my_instrument)
 
