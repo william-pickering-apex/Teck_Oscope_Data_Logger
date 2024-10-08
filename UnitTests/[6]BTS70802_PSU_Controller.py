@@ -7,16 +7,10 @@ rm.list_resources()
 
 my_instrument = rm.open_resource('USB0::0x3121::0x0002::579I23132::INSTR')
 
-#Put all channels in single mode
-my_instrument.query('OUTP:PAIR OFF')
+#Put all channels in parallel mode for high current operation
+my_instrument.query('OUTP:PAIR PARA3')
 
 #Ensure output is off
-#SWITCHTOCHANNEL0
-my_instrument.query('INST 0')
-my_instrument.query('OUTP 0')
-my_instrument.query('INST 1')
-my_instrument.query('OUTP 0')
-my_instrument.query('INST 2')
 my_instrument.query('OUTP 0')
 
 
@@ -29,27 +23,20 @@ my_instrument.query('INIT:DLOG')
 
 ##TEST 4 PDQ10###
 #set the current
-print("Current Limit: 4A")
+print("Current Limit: 4.5A")
 
-#ENABLE POWER CH0
-my_instrument.query('INST 0')
-my_instrument.query('VOLT 5')
-my_instrument.query('CURR 4') #TARGET VALUE IS 3.6A
+#ENABLE POWER
+my_instrument.query('VOLT 15')
+my_instrument.query('CURR 4.5') #TARGET VALUE IS 3.6A
 my_instrument.query('OUTP 1')
 
 time.sleep(0.1)
-#ENABLE POWER CH1
-my_instrument.query('INST 1')
-my_instrument.query('VOLT 5')
-my_instrument.query('CURR 4') #TARGET VALUE IS 3.6A
-my_instrument.query('OUTP 1')
 
 file_base_name = "../Logs/"+input("Enter Test Name: ")+".csv"
 with open(file_base_name, mode='a') as file:
-    file.write('CH1 PSU Output (V),CH1 PSU Output Avg (A),CH1 PSU Output Min (A),CH1 PSU Output Max (A)')
-    file.write(',CH2 PSU Output (V),CH2 PSU Output Avg (A),CH2 PSU Output Min (A),CH2 PSU Output Max (A)\n')
+    file.write('CH1 PSU Output (V),CH1 PSU Output Avg (A),CH1 PSU Output Min (A),CH1 PSU Output Max (A)\n')
 
-print("Steady State Voltage at 5V")
+print("Steady State Voltage at 15V")
 try:
     while (True):
         BKP_9141.steady_state(my_instrument,file_base_name,2)
