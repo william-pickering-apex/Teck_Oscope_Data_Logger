@@ -38,7 +38,15 @@ with open(file_base_name, mode='a') as file:
 
 try:
     while (True):
-        BKP_9141.steady_state(my_instrument,file_base_name,2)
+        BKP_9141.steady_state(my_instrument,file_base_name,3)
+
+        my_instrument.query('INST 2')
+        my_instrument.query('OUTP 0')
+
+        time.sleep(4)
+
+        my_instrument.query('INST 2')
+        my_instrument.query('OUTP 1')
 
 except KeyboardInterrupt:
     print("exiting")

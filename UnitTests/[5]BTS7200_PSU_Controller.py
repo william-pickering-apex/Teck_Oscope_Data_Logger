@@ -38,16 +38,10 @@ my_instrument.query('CURR 4') #TARGET VALUE IS 3.6A
 my_instrument.query('OUTP 1')
 
 time.sleep(0.1)
-#ENABLE POWER CH1
-my_instrument.query('INST 1')
-my_instrument.query('VOLT 5')
-my_instrument.query('CURR 4') #TARGET VALUE IS 3.6A
-my_instrument.query('OUTP 1')
 
 file_base_name = "../Logs/"+input("Enter Test Name: ")+".csv"
 with open(file_base_name, mode='a') as file:
     file.write('CH1 PSU Output (V),CH1 PSU Output Avg (A),CH1 PSU Output Min (A),CH1 PSU Output Max (A)')
-    file.write(',CH2 PSU Output (V),CH2 PSU Output Avg (A),CH2 PSU Output Min (A),CH2 PSU Output Max (A)\n')
 
 print("Steady State Voltage at 5V")
 try:

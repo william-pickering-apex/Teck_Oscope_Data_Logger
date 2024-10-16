@@ -22,12 +22,15 @@ def set_peak_to_peak_measurement(ch):
         #minor timeout
         print("timed out on pkpk")
 
-target_output=28
-minimum_allowable=26.5
-maximum_allowable=29.5
-
 file_base_name = input("Enter Test Name: ")
 file_base_name=file_base_name.replace(" ","_").replace('"','')
+target_output=5
+minimum_allowable=4.5
+maximum_allowable=5.5
+target_current = 1
+min_input_cur=1.4
+max_input_cur=1
+
 with DeviceManager(verbose=False) as device_manager:
     global scope
     # Enable resetting the devices when connecting and closing
@@ -46,12 +49,12 @@ with DeviceManager(verbose=False) as device_manager:
     # Turn on channel 1 and channel 2
     scope.commands.display.waveview1.ch[1].state.write("ON")
     scope.commands.ch[1].scale.write(2)
-    scope.commands.ch[1].offset.write(target_output)
+    scope.commands.ch[1].offset.write(28)
     scope.commands.display.waveview1.ch[2].state.write("ON")
-    scope.commands.ch[2].scale.write(0.5)
-    scope.commands.ch[2].offset.write(3)
+    scope.commands.ch[2].scale.write(.1)
+    scope.commands.ch[2].offset.write(target_current)
     scope.commands.display.waveview1.ch[3].state.write("ON")
-    scope.commands.ch[3].scale.write(1)
+    scope.commands.ch[3].scale.write(0.2)
     scope.commands.ch[3].offset.write(target_output)
     scope.commands.display.waveview1.ch[4].state.write("off")
 
@@ -83,15 +86,15 @@ with DeviceManager(verbose=False) as device_manager:
     time.sleep(0.5)
     scope.write("SEARCH:SEARCH3:TRIGGER:A:EDGE:SLOPE FALL")
     scope.write("SEARCH:SEARCH3:TRIGGER:A:EDGE:SOURCE CH2")
-    scope.write("SEARCH:SEARCH3:TRIGger:A:EDGE:THReshold 2.5")
-    scope.write("ACTONEVent:SEARCH:ACTION:SAVEIMAGe:STATE ON")
-    scope.write('SAVEONEVENT:FILENAME "{}"'.format(file_base_name))
+    scope.write("SEARCH:SEARCH3:TRIGger:A:EDGE:THReshold {}".format(min_input_cur))
+    scope.write("ACTONEVent:SEARCH:ACTION:SAVEIMAGe:STATE ")
+    #scope.write('SAVEONEVENT:FILENAME "{}"'.format(file_base_name))
 
     time.sleep(0.5)
     scope.write('SEARCH:ADDNEW “SEARCH4”')
     scope.write("SEARCH:SEARCH4:TRIGGER:A:EDGE:SLOPE RISE")
     scope.write("SEARCH:SEARCH4:TRIGGER:A:EDGE:SOURCE CH2")
-    scope.write("SEARCH:SEARCH4:TRIGger:A:EDGE:THReshold 4.5")
+    scope.write("SEARCH:SEARCH4:TRIGger:A:EDGE:THReshold {}".format(max_input_cur))
     scope.write("ACTONEVent:SEARCH:ACTION:SAVEIMAGe:STATE ON")
     scope.write('SAVEONEVENT:FILENAME "{}"'.format(file_base_name))
     #print(scope.query("MEASUrement:MEAS1:RESUlts:ALLAcqs:PK2PK?"))

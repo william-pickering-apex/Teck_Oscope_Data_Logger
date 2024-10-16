@@ -8,6 +8,8 @@ my_instrument = rm.open_resource('USB0::0x3121::0x0002::579I23132::INSTR')
 
 #Put all channels in parallel mode for high current operation
 my_instrument.query('OUTP:PAIR PARA3')
+#Put all channels in single mode
+#my_instrument.query('OUTP:PAIR OFF')
 
 #Ensure output is off
 my_instrument.query('OUTP 0')
@@ -30,7 +32,7 @@ print("Current Limit: 7A")
 my_instrument.query('OUTP 1')
 try:
     while (True):
-        BKP_9141.battery_triangle_wave(my_instrument,file_base_name)
+        BKP_9141.improved_steady_state(my_instrument,file_base_name)
         # Pause for 5 seconds
         #time.sleep(time_step)
 
